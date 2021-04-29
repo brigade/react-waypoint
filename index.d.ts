@@ -43,6 +43,13 @@ declare namespace Waypoint {
         viewportBottom: number;
     }
 
+    interface CallbackProgressArgs extends CallbackArgs {
+        /*
+         * Indicates the progress between the enter and leave event with a number between 0 and 1.
+         */
+        progress: number;
+    }
+
     interface WaypointProps {
         /**
          * Function called when waypoint enters viewport
@@ -55,6 +62,12 @@ declare namespace Waypoint {
          * @param {CallbackArgs} args
          */
         onLeave?: (args: CallbackArgs) => void;
+
+        /**
+         * Function called when waypoint is inside viewport and a scroll event happens.
+         * @param {CallbackProgressArgs} args
+         */
+        onProgress?: (args: CallbackProgressArgs) => void;
 
         /**
          * Function called when waypoint position changes

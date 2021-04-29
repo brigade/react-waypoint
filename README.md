@@ -75,6 +75,16 @@ below) has changed.
 />
 ```
 
+If you need more information over the scrolling progress you can use pass a function to the `onProgress` prop.
+```js
+<Waypoint
+  onProgress={this._handleProgress}
+/>
+```
+It will fire on every position change inside the object. The information is passed
+with the `progress` attribute that ranges from 0 - 1. Using this can result in a big performance hit,
+as a lot of scrolling events are firing, only use this with caution.
+
 Waypoints can take a child, allowing you to track when a section of content
 enters or leaves the viewport. For details, see [Children](#children), below.
 
@@ -104,6 +114,12 @@ enters or leaves the viewport. For details, see [Children](#children), below.
      * Function called when waypoint leaves viewport
      */
     onLeave: PropTypes.func,
+
+    /**
+     * Function called when waypoint is in the viewport and the scroll position changed
+     */
+    onProgress: PropTypes.func,
+
 
     /**
      * Function called when waypoint position changes
@@ -173,7 +189,7 @@ enters or leaves the viewport. For details, see [Children](#children), below.
   },
 ```
 
-All callbacks (`onEnter`/`onLeave`/`onPositionChange`) receive an object as the
+All callbacks (`onEnter`/`onLeave`/`onProgress`/`onPositionChange`) receive an object as the
 only argument. That object has the following properties:
 
 - `currentPosition` - the position that the waypoint has at the moment. One
