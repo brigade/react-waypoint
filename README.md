@@ -170,6 +170,11 @@ enters or leaves the viewport. For details, see [Children](#children), below.
      * things down significantly, so it should only be used during development.
      */
     debug: PropTypes.bool,
+
+    /**
+     * Delay onEnter event in miliseconds
+     */
+    delay: PropTypes.number,
   },
 ```
 
