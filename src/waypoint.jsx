@@ -134,10 +134,7 @@ export class Waypoint extends React.PureComponent {
    *   as a fallback.
    */
   _findScrollableAncestor() {
-    const {
-      horizontal,
-      scrollableAncestor,
-    } = this.props;
+    const { horizontal, scrollableAncestor } = this.props;
 
     if (scrollableAncestor) {
       return resolveScrollableAncestorProp(scrollableAncestor);
@@ -159,7 +156,11 @@ export class Waypoint extends React.PureComponent {
         : style.getPropertyValue('overflow-y');
       const overflow = overflowDirec || style.getPropertyValue('overflow');
 
-      if (overflow === 'auto' || overflow === 'scroll' || overflow === 'overlay') {
+      if (
+        overflow === 'auto'
+        || overflow === 'scroll'
+        || overflow === 'overlay'
+      ) {
         return node;
       }
     }
@@ -167,6 +168,25 @@ export class Waypoint extends React.PureComponent {
     // A scrollable ancestor element was not found, which means that we need to
     // do stuff on window.
     return window;
+  }
+
+  /**
+   * Traverses up the DOM to check element is display.
+   *
+   * @return {Boolean}
+   */
+  _checkDisplay() {
+    let node = this._ref;
+
+    while (node && node instanceof Element) {
+      const style = window.getComputedStyle(node);
+      if (style.getPropertyValue('display') === 'none') {
+        return false;
+      }
+      node = node.parentNode;
+    }
+
+    return true;
   }
 
   /**
@@ -181,7 +201,9 @@ export class Waypoint extends React.PureComponent {
     }
 
     const bounds = this._getBounds();
-    const currentPosition = getCurrentPosition(bounds);
+    // If waypoint or its parent is not display
+    const currentPosition = this._checkDisplay() ? getCurrentPosition(bounds) : INVISIBLE;
+
     const previousPosition = this._previousPosition;
     const {
       debug,
@@ -221,10 +243,8 @@ export class Waypoint extends React.PureComponent {
       onLeave.call(this, callbackArg);
     }
 
-    const isRapidScrollDown = previousPosition === BELOW
-      && currentPosition === ABOVE;
-    const isRapidScrollUp = previousPosition === ABOVE
-      && currentPosition === BELOW;
+    const isRapidScrollDown = previousPosition === BELOW && currentPosition === ABOVE;
+    const isRapidScrollUp = previousPosition === ABOVE && currentPosition === BELOW;
 
     if (fireOnRapidScroll && (isRapidScrollDown || isRapidScrollUp)) {
       // If the scroll event isn't fired often enough to occur while the
@@ -264,7 +284,8 @@ export class Waypoint extends React.PureComponent {
       contextHeight = horizontal ? window.innerWidth : window.innerHeight;
       contextScrollTop = 0;
     } else {
-      contextHeight = horizontal ? this.scrollableAncestor.offsetWidth
+      contextHeight = horizontal
+        ? this.scrollableAncestor.offsetWidth
         : this.scrollableAncestor.offsetHeight;
       contextScrollTop = horizontal
         ? this.scrollableAncestor.getBoundingClientRect().left
@@ -341,10 +362,7 @@ if (process.env.NODE_ENV !== 'production') {
     // For instance, if you pass "-20%", and the containing element is 100px tall,
     // then the waypoint will be triggered when it has been scrolled 20px beyond
     // the top of the containing element.
-    topOffset: PropTypes.oneOfType([
-      PropTypes.string,
-      PropTypes.number,
-    ]),
+    topOffset: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 
     // `bottomOffset` can either be a number, in which case its a distance from the
     // bottom of the container in pixels, or a string value. Valid string values are

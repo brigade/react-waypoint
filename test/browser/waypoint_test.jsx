@@ -1390,6 +1390,41 @@ describe('<Waypoint>', () => {
       });
     });
   });
+
+  describe('When the parent element is not displayed', () => {
+    beforeEach(() => {
+      subject = () => {
+        parentStyle = {
+          height: 100,
+          display: 'none',
+        };
+        const el = renderAttached(
+          <div style={parentStyle}>
+            <div style={{ display: 'inline-block' }} />
+            <Waypoint {...props} />
+            <div style={{ display: 'inline-block' }} />
+          </div>,
+        );
+
+        jasmine.clock().tick(1);
+        return el;
+      };
+    });
+
+    afterEach(() => { });
+
+    it('does not call the onEnter handler', () => {
+      expect(props.onEnter).not.toHaveBeenCalled();
+    });
+
+    it('does not call the onLeave handler', () => {
+      expect(props.onLeave).not.toHaveBeenCalled();
+    });
+
+    it('does not call the onPositionChange handler', () => {
+      expect(props.onPositionChange).not.toHaveBeenCalled();
+    });
+  });
 });
 
 // smoke tests for horizontal scrolling
